@@ -7,7 +7,7 @@ Convert a **restricted, “works-for-me” subset** of Markdown + a few HTML tag
 
 > [!IMPORTANT]
 > This project is intentionally narrow: it only implements the conversions needed for the author’s workflow.
-> 
+>
 > See [Supported Conversions](#user-content-supported-conversions) and [Limitations / Gotchas](#user-content-limitations--gotchas) before assuming it’s a general Markdown converter.
 >
 > If anyone needs support for more markdowns added, let me know.
@@ -109,10 +109,14 @@ It is recommended to use the following HTML block for the [css section](#user-co
 </style></details></div>
 ```
 
-### Alignment tags
+### Alignment
 `<center>` / `<right>` content should be kept to a single logical line. Multiline alignment can render inconsistently.
 
 Newline font/height sizes in visual studio are sometimes improperly influenced by the following line. In this case you may want to add extra `<br class=Hide>` after the newline to match vertical spacing in other renderers.
+
+To best horizontally align text in Nexus Mods I recommend combining normal sized spaces and a few extra spaces between `<font size=1>··</font>` for finer control.
+<br>To facilitate this, the BBcode conversion will automatically replace all instances of 2 spaces with a space and an NBSP character.
+<br>For horizontal aligning in the MarkDown/HTML, you can add css padding styles to an HTML element.
 
 ### Horizontal lines
 `---` immediately following an HTML line in both Visual Studio and Github render a 1px high vertical line.
