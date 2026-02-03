@@ -32,10 +32,11 @@ These are the rules to convert the markdown to bbcode.
 1. **Blockquotes**: 
 	* Collapse consecutive lines starting with `> ?` into one `[quote]$1[/quote]`, with each collapsed line on its own line
 1. **Single newline instances collapse into a single line with a space separator**: `(?<!\n)\n(?!\n)` → ` `
+	* If there is a tag before the newline, the space is omitted
 1. **2+ newlines together become a single newline**: `\n{2,}` - > `\n`
 1. **Center align tags**: `<center>CAPGRP</center>|<p.*?align=center>CAPGRP</p>` → `[center]$1\n[/center]`
 	* Both `<center></center>` and `<p align=center></p>` supported
-	* `[/center]` and `[/right]` always starts on a new line
+	* `[/center]` and `[/right]` always starts on a newline
 	* [HTML conversion](#user-content-html-conversion) removes `<p></p>` tags for any paragraph with a `<center>` or `<right>` in it
 1. **Right align tag**: `<p.*?align=right>CAPGRP</p>` → `[right]$1\n[/right]`
 	* Same as above rule but right aligned instead of centered
@@ -72,7 +73,7 @@ These are the rules to convert the markdown to bbcode.
 	1. **Add newline back between list and first item**: `\[/list]\[\*]` → `[/list]\n[*]"`
 	1. **Remove empty meta tags and following soft newlines**: `<meta/>\n*` → <code></code>
 		* See [Forcing Markdown Rendering After HTML](./README.md#user-content-forcing-markdown-rendering-after-html)
-	1. **Change `<br>` to new line**: `<br>` → `\n`
+	1. **Change `<br>` to newline**: `<br>` → `\n`
 	1. **Strip spaces from beginning of file**
 	1. **Other raw HTML is kept as-is**
 

@@ -143,6 +143,7 @@ def convert(s: str) -> str:
 	def unprotect_str(haystack: str, needle: str, name: str): return haystack.replace(f"\x00{name}\x00", needle)
 	s=re.sub(r"\n{3,}", "\n\n", s)		#Make sure there are never more than 2 adjacent newlines
 	s=  protect_str(s, "\n\n", "DBLNL")	#Protect double newlines
+	s=re.sub(r"([>\]])\n", r"\1", s)	#Remove single line following a tag
 	s=s.replace("\n", " ")				#Change single line into a space
 	s=unprotect_str(s, "\n"  , "DBLNL")	#Change what were double newlines into a single newline
 
@@ -163,7 +164,7 @@ def convert(s: str) -> str:
 	old_string=""
 	while old_string!=s:
 		old_string=s
-		s=tag_replace(s, "font", "-",	r'[^>]*\b(color|size)\s*=\s*(?:"([^"]+)"|(\w+))', r"[\1=\2\3]\4[/\1]", r'(?:(?!<font\b).)*?');
+		s=tag_replace(s, "font", "-",	r'[^>]*\b(color|size)\s*=\s*(?:"([^"]+)"|([#\w]+))', r"[\1=\2\3]\4[/\1]", r'(?:(?!<font\b).)*?');
 
 	#Details spoiler
 	s=re.sub(r"(?is)<details>\s*<summary>\s*Spoiler\s*</summary>(.*?)</details>", r"[spoiler]\1[/spoiler]", s)
