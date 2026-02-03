@@ -1,6 +1,5 @@
 #Parse MD lists
 import re
-from typing import List
 
 class ListSection:
 	def __init__(self, indent: int, kind: str):
@@ -16,8 +15,8 @@ def convert_lists(md: str) -> str:
 	  - [/list] on its own line
 	"""
 	lines=md.split("\n")
-	out: List[str]=[]
-	stack: List[ListSection]=[]
+	out: list[str]=[]
+	stack: list[ListSection]=[]
 
 	def open_list(kind: str):
 		tag="[list=1]\n\n" if kind=="ol" else "[list]\n\n"

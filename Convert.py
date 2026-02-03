@@ -1,17 +1,11 @@
 #Do the actual conversions
 import re
-from typing import List
-from MdList import convert_lists
+from ConvertLists import convert_lists
+from ConvertFonts import get_font_styles, convert_fonts
+from Helper import parse_attrs, tag_replace
 
 HR_FULL ="[img=top]https://images.castledragmire.com/silksong/Line1018.png[/img]"
 HR_SHORT="[img=top]https://images.castledragmire.com/silksong/Line425.png[/img]"
-
-def parse_attrs(attrs: str) -> dict:
-	out={}
-	for m in re.finditer(r"""(?is)\b([a-zA-Z_][-\w]*)\b\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'>]+))""", attrs):
-		val=m.group(2) or m.group(3) or m.group(4)
-		out[m.group(1).lower()]=True if val is None else val
-	return out
 
 def image_tag_replace(m: re.Match) -> str:
 	attrs=parse_attrs(m.group("attrs") or "")
@@ -24,9 +18,10 @@ def image_tag_replace(m: re.Match) -> str:
 	)
 
 def convert(s: str) -> str:
+	font_classes=get_font_styles(s)
 	for f in (funcs :=(
 		initial_conversions, convert_lists, convert_hr_markers, convert_blockquotes,
-		convert_newlines, convert_alignment_and_anchor, convert_fonts, convert_details_to_spoiler,
+		convert_newlines, convert_alignment_and_anchor, lambda st: convert_fonts(st, font_classes), convert_details_to_spoiler,
 		convert_simple_html_tags, advanced_replacements, convert_emphasis_markdown_tags, final_conversions,
 	)):
 		s=f(s)
@@ -87,29 +82,13 @@ def convert_newlines(s: str) -> str:
 	s=unprotect_str(s, "\n"  , "DBLNL")	#Change what were double newlines into a single newline
 	return s
 
-#Replace in haystack: `<html_tag per_attr_regex>override_text</html_tag>` with `override_rep ?? [bbcode_tag]override_text[/bbcode_tag]`
-def tag_replace(haystack: str, html_tag: str, bbcode_tag: str, per_attr_regex: str="", override_rep: str|None=None, override_text: str=".*?"):
-	return re.sub(
-		rf'(?is)<{html_tag}\b{per_attr_regex}[^>]*>({override_text})</{html_tag}\s*>',
-		override_rep if override_rep is not None else rf"[{bbcode_tag}]\1[/{bbcode_tag}]",
-		haystack
-	)
-
 #Center/p align/a (TEXT can include newlines)
 def convert_alignment_and_anchor(s: str) -> str:
-	s=tag_replace(s, "center", "center");												#<center> -> [center]
-	s=tag_replace(s, "p", "center",	r'[^>]*\balign\s*=\s*"?center"?');					#<p align=center> -> [center]
-	s=tag_replace(s, "p", "right",	r'[^>]*\balign\s*=\s*"?right"?');					#<p align=right> -> [right]
+	s=tag_replace(s, "center", "center")												#<center> -> [center]
+	s=tag_replace(s, "p", "center",	r'[^>]*\balign\s*=\s*"?center"?')					#<p align=center> -> [center]
+	s=tag_replace(s, "p", "right",	r'[^>]*\balign\s*=\s*"?right"?')					#<p align=right> -> [right]
 	s=tag_replace(s, "a", "url",	r'[^>]*\bhref\s*=\s*"([^"]+)"', r"[url=\1]\2[/url]")#<a href="URL">TEXT</a> -> [url=URL]TEXT[/url]
 	s=re.sub(r"\[/(center|right)]", r"\n[/\1]", s)										#Add newline before end center or right
-	return s
-
-#Font -> color/size (with nesting)
-def convert_fonts(s: str) -> str:
-	old_string=""
-	while old_string!=s:
-		old_string=s
-		s=tag_replace(s, "font", "-",	r'[^>]*\b(color|size)\s*=\s*(?:"([^"]+)"|([#\w]+))', r"[\1=\2\3]\4[/\1]", r'(?:(?!<font\b).)*?');
 	return s
 
 def convert_details_to_spoiler(s: str) -> str:
@@ -138,11 +117,11 @@ def advanced_replacements(s: str) -> str:
 		r"[img]\1[/img]":	r"!\[[^\]]*]\(([^)]+)\)",						#Markdown image: ![Text](URL)
 		r"[url=\2]\1[/url]":rf"\[((?!{BBTags})[^\]]+)]\(([^)]+)\)",			#Markdown link: [Text](URL)
 	}.items():
-		s=re.sub(search, replace, s);
+		s=re.sub(search, replace, s)
 	return s
 
 def convert_emphasis_markdown_tags(s: str) -> str:
-	s=  protect_str(s, "[*]", "LI");
+	s=  protect_str(s, "[*]", "LI")
 	for markdown_tag, replace_with in {
 		r"\*\*\*":	r"[b][i]\1[/i][/b]",
 		r"\*\*":	r"[b]\1[/b]",
@@ -152,7 +131,7 @@ def convert_emphasis_markdown_tags(s: str) -> str:
 		r"~~":		r"[s]\1[/s]",
 	}.items():
 		s=re.sub(rf"(?s)(?<!\\){markdown_tag}([^\n]+?)(?<!\\){markdown_tag}", replace_with, s)
-	s=unprotect_str(s, "[*]", "LI");
+	s=unprotect_str(s, "[*]", "LI")
 	return s
 
 #Finishing touch ups
@@ -163,6 +142,6 @@ def final_conversions(s: str) -> str:
 	s=re.sub(r"\\([*_])", r"\1", s)																	#\* and \_ -> * and _
 	s=s.replace("[/list][*]", "[/list]\n[*]")														#Add newline back between list and first item
 	s=re.sub(r"<meta/>\n*", "", s)																	#<meta/> removes all newlines after it
-	s=s.replace("<br>", "\n");																		#Unprotect breaks
+	s=s.replace("<br>", "\n")																		#Unprotect breaks
 	s = s.lstrip(' ')																				#Strip spaces from the beginning of the file
 	return s
