@@ -22,7 +22,7 @@ Convert a **restricted, “works-for-me” subset** of Markdown + a few HTML tag
 
 ## Repo Layout
 
-- `MdToNexusBBCode.py` — Markdown/HTML → Nexus BBCode
+- `MdToNexusBBCode.py` — Markdown/HTML → [Nexus](https://www.nexusmods.com) BBCode
 - `MdToHtml.sh` — Markdown → HTML using `pandoc`, with some pre and post processing
 - `RecommendedCSS.css` — CSS to make HTML output look closer to Nexus
 - `Examples/SilkDev.AboutMe.*` — example input/output files
@@ -71,7 +71,7 @@ Unless specified below, HTML elements are left alone.
 
 ### Markdown input handling (BBCode path)
 - Nested lists (unordered: `* - +`, ordered: `1.`)
-- Horizontal rules: ` ---`, `---`, `***` (See [Horizontal Lines](#user-content-horizontal-lines))
+- Horizontal rules: ` ---`, `---`, ` ***`, `***` (See [Horizontal Lines](#user-content-horizontal-lines))
 - Multiline quotes: consecutive `> ...` → single `[quote]...[/quote]`
 - Images: `![alt](url)`
 - Links: `[text](url)`
@@ -122,13 +122,14 @@ To best horizontally align text in Nexus Mods I recommend combining normal sized
 `---` immediately following an HTML line in both Visual Studio and Github render a 1px high vertical line.
 Nexus `<hr>` elements also have large margins. This project standardizes rules by mapping them to line images for BBCode.
 
-|Tag     | Visual Studio/GitHub | BBCode                                   | HTML               |
-|--------|----------------------|------------------------------------------|--------------------|
-| `---`  | 1px border-bottom    | `\n<img src=Line425.png>`                | `<hr class=small>` |
-| ` ---` | 1px border-bottom    | `<center><img src=Line425.png></center>` | `<hr class=small>` |
-| `***`  | `<hr>`               | `\n<img src=Line1018.png>`               | `<hr>`             |
+| Tag    | Visual Studio/GitHub | BBCode                                                                                                             | HTML               | Best for                                                                    |
+|--------|----------------------|--------------------------------------------------------------------------------------------------------------------|--------------------|--------------------------------------------------                           |
+| `---`  | 1px border-bottom    | <code>\n[img=top][Line425.png](https://static.castledragmire.com/silksong/Line425.png)[/img]</code>                | `<hr class=small>` | Left aligned text to underline                                              |
+| ` ---` | 1px border-bottom    | <code>[center][img=top][Line425.png](https://static.castledragmire.com/silksong/Line425.png)[/img][/center]</code> | `<hr class=small>` | Center aligned text to underline                                            |
+| `***`  | `<hr>`               | <code>\n[img=top][Line1018.png](https://static.castledragmire.com/silksong/Line1018.png)[/img]</code>              | `<hr>`             | Full width line for [Nexus Mods](https://www.nexusmods.com) Mod description |
+| ` ***` | `<hr>`               | <code>\n[img=top][Line1230.png](https://static.castledragmire.com/silksong/Line1230.png)[/img]</code>              | `<hr>`             | Full width line for [Nexus Mods](https://www.nexusmods.com) Mod articles    |
 
-`Line425.png` and `Line1018.png` are 3px height white lines of width 425px and 1080px respectively. Their values work well on Nexus Mods (which squishes images that are too long) as partial and full line `<hr>`s.
+`Line###.png` are 3px height white lines with width matching their filename. They are located at `https://static.castledragmire.com/silksong/`. Their values work well on Nexus Mods (which squishes images that are too long) as partial and full line `<hr>`s.
 
 ### Forcing Markdown Rendering After HTML
 I have found that adding a `<meta/>` tag between HTML and markdown can help force markdown to render. Soft newlines (not `<br>`s) after these meta tags are also removed.

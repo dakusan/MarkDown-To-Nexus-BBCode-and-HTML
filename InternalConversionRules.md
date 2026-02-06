@@ -13,7 +13,7 @@ These are the rules to convert the markdown to bbcode.
 	* List type support:
 		* Must match the following format, followed by a space
 		* Unordered
-			* Single character: `*` `-` `+` 
+			* Single character: `*` `-` `+`
 			* Characters can be used interchangably on the same list
 		* Ordered
 			* Number followed by a period `\d+\.`
@@ -21,15 +21,18 @@ These are the rules to convert the markdown to bbcode.
 	* Unordered vs Ordered cannot mix on same level
 	* Indention amounts for nested list levels must be the exact same for a list level. Each additional level must be 2-4 spaces or a tab.
 	* Conversion notes: `[list]` will start at the beginning of the previous line. `[/list]` will start on its own line
-1. **Centered short horizontal rule**: `^ ---$` → `[center][img=top]https://images.castledragmire.com/silksong/Line425.png[/img][/center]`
-	* Centered 425*3px white line
+1. Horizontal rules:
+	* These link to 3px height white lines of varying width. Their text must be the only thing on the line (including whitespace).
+	* They actually turn into `[img=top]https://static.castledragmire.com/silksong/Line###.png[/img]` where `###` is the width (no leading 0s). Optional `[center]...[/center]` tags may surround them
 	* See [Horizontal Lines](./README.md#user-content-horizontal-lines)
-1. **Short horizontal rule**: `^---$` → `\n[img=top]https://images.castledragmire.com/silksong/Line425.png[/img]`
-	* Same as above rule but not centered
-1. **Full-width horizontal rule**: `^***$|<hr>` → `\n[img=top]https://images.castledragmire.com/silksong/Line1018.png[/img]`
-	* 1018*3px white line
-	* See [Horizontal Lines](./README.md#user-content-horizontal-lines)
-1. **Blockquotes**: 
+
+	| Text   | Width                                                            | Centered |
+	|--------|------------------------------------------------------------------|----------|
+	| `---`  | [425](https://static.castledragmire.com/silksong/Line425.png)    | ❎️        |
+	| ` ---` | [425](https://static.castledragmire.com/silksong/Line425.png)    | ✅️        |
+	| `***`  | [1018](https://static.castledragmire.com/silksong/Line1018.png)  | ❎️        |
+	| ` ***` | [1230](https://static.castledragmire.com/silksong/Line1230.png)  | ❎️        |
+1. **Blockquotes**:
 	* Collapse consecutive lines starting with `> ?` into one `[quote]$1[/quote]`, with each collapsed line on its own line
 1. **Single newline instances collapse into a single line with a space separator**: `(?<!\n)\n(?!\n)` → ` `
 	* If there is a tag before the newline, the space is omitted

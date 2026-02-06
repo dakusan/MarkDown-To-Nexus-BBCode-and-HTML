@@ -4,8 +4,9 @@ from ConvertLists import convert_lists
 from ConvertFonts import get_font_styles, convert_fonts
 from Helper import parse_attrs, tag_replace
 
-HR_FULL ="[img=top]https://images.castledragmire.com/silksong/Line1018.png[/img]"
-HR_SHORT="[img=top]https://images.castledragmire.com/silksong/Line425.png[/img]"
+HR_LONG ="[img=top]https://static.castledragmire.com/silksong/Line1230.png[/img]"
+HR_FULL ="[img=top]https://static.castledragmire.com/silksong/Line1018.png[/img]"
+HR_SHORT="[img=top]https://static.castledragmire.com/silksong/Line425.png[/img]"
 
 def image_tag_replace(m: re.Match) -> str:
 	attrs=parse_attrs(m.group("attrs") or "")
@@ -45,6 +46,7 @@ def convert_hr_markers(s: str) -> str:
 	#HR markers
 	s=bol_markers(s, " ---", lambda m: f"[center]{HR_SHORT}[/center]")
 	s=bol_markers(s, "---" , lambda m: "\n\n" + HR_SHORT)
+	s=bol_markers(s, " ***", lambda m: "\n\n" + HR_LONG )
 	s=bol_markers(s, "***" , lambda m: "\n\n" + HR_FULL )
 	return s
 
